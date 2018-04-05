@@ -1,0 +1,71 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+GET           /                                                       controllers.Assets.at(path="/public/html", file="index.html")
+GET           /landingPage                                            controllers.Assets.at(path="/public/html", file="landingPage.html")
+
+GET           /currentUsername                                        controllers.UserController.getCurrentUsername
+PUT           /users                                                  controllers.UserController.register
+GET           /users/:username                                        controllers.UserController.getProfileByUsername(username: String)
+POST          /users/profile                                          controllers.UserController.updateProfile()
+POST          /users/login                                            controllers.UserController.login
+POST          /users/logout                                           controllers.UserController.logout
+POST          /users/resetPassword                                    controllers.UserController.resetPassword
+GET           /users/authors/confs/:confId                            controllers.UserController.getAuthorsByConfId(confId: String)
+GET           /users/reviewers/confs/:confId                          controllers.UserController.getReviewersByConfId(confId: String)
+
+PUT           /papers                                                 controllers.PaperController.submitPaper()
+GET           /papers/confs/:confId/users/:username                   controllers.PaperController.getPapersByConfIdAndUsername(confId: String, username: String)
+POST          /papers                                                 controllers.PaperController.updatePaper()
+POST          /papers/upload/:paperId                                 controllers.PaperController.uploadPaper(paperId: String)
+GET           /papers/:paperId                                        controllers.PaperController.getPaperById(paperId: String)
+POST          /papers/assignReviewer                                  controllers.PaperController.assignReviewer()
+POST          /papers/removeReviewer                                  controllers.PaperController.removeReviewer()
+GET           /papers/download/:paperId                               controllers.PaperController.download(paperId: String)
+GET           /papers/display/:paperId                                controllers.PaperController.display(paperId: String)
+GET           /papers/confs/:confId/reviewers/:username               controllers.PaperController.getReviewingPapers(confId: String, username: String)
+GET           /papers/confs/:confId                                   controllers.PaperController.getPapersByConfId(confId: String)
+GET           /papers/excel/confs/:confId/:type                       controllers.PaperController.genExcel(confId: String, type: String)
+POST          /papers/status                                          controllers.PaperController.setStatus()
+
+GET           /confs/users/:username/all                              controllers.ConferenceController.getAllConfs(username: String)
+GET           /confs/users/:username/submission                       controllers.ConferenceController.getConferencesSubmitted(username: String)
+POST          /confs/assignReviewer                                   controllers.ConferenceController.assignReviewer()
+DELETE        /confs/:confId/removeReviewer/:username                 controllers.ConferenceController.removeReviewer(confId: String, username: String)
+POST          /confs/assignAdmin                                      controllers.ConferenceController.assignAdmin()
+POST          /confs/assignPcChair                                    controllers.ConferenceController.assignPcChair()
+POST          /confs/assignPendingReviewer                            controllers.ConferenceController.assignPendingReviewer()
+GET           /confs/reviewers/:username                              controllers.ConferenceController.getConferencesByReviewer(username: String)
+GET           /confs/:confId/pendingReviewers                         controllers.ConferenceController.getPendingReviewers(confId: String)
+POST          /confs/status                                           controllers.ConferenceController.updateStatus()
+POST          /confs/submissionEmailTemplate                          controllers.ConferenceController.updateSubmissionEmailTemplate()
+POST          /confs/reminderEmailTemplate                            controllers.ConferenceController.updateReminderEmailTemplate()
+POST          /confs/emailAuthors                                     controllers.ConferenceController.sendEmailToAuthors()
+POST          /confs/reviewerReminder                                 controllers.ConferenceController.sendReminderToReviewers()
+POST          /confs/reviewerWithUnreviewedReminder                   controllers.ConferenceController.sendReminderToReviewersWithUnreviewedPapers()
+
+PUT           /confs/researchTopics                                   controllers.ConferenceController.putResearchTopics()
+PUT           /confs/criteria                                         controllers.ConferenceController.putCriteria()
+PUT           /confs/reviewQuestions                                  controllers.ConferenceController.putReviewQuestions()
+PUT           /confs/statusCodes                                      controllers.ConferenceController.putStatusCodes()
+
+DELETE        /confs/:confId/researchTopics/:researchTopicId          controllers.ConferenceController.deleteResearchTopics(confId: String, researchTopicId: String)
+DELETE        /confs/:confId/criteria/:criterionId                    controllers.ConferenceController.deleteCriteria(confId: String, criterionId: String)
+DELETE        /confs/:confId/reviewQuestions/:reviewQuestionId        controllers.ConferenceController.deleteReviewQuestions(confId: String, reviewQuestionId: String)
+DELETE        /confs/:confId/statusCodes/:statusCodeId                controllers.ConferenceController.deleteStatusCodes(confId: String, statusCodeId: String)
+DELETE        /confs/:confId/pendingReviewer/:username                controllers.ConferenceController.deletePendingReviewer(confId: String, username: String)
+
+GET           /confs/:confId                                          controllers.ConferenceController.getConfById(confId: String)
+POST          /confs/configure                                        controllers.ConferenceController.configureConf()
+POST          /confs/:confId/upload/logo                              controllers.ConferenceController.uploadLogo(confId: String)
+
+POST          /reviews                                                controllers.ReviewController.submitReview()
+GET           /reviews/papers/:paperId/reviewers/:username            controllers.ReviewController.getReviewByPaperIdAndUsername(paperId: String, username: String)
+GET           /reviews/papers/:paperId                                controllers.ReviewController.getReviewsByPaperId(paperId: String)
+
+GET           /assets/*file                                           controllers.Assets.at(path="/public", file)
+
+# for test only
+GET           /test/uploadFile                                        controllers.Assets.at(path="/public", file="test/uploadFile.html")
+GET           /test/uploadLogo                                        controllers.Assets.at(path="/public", file="test/uploadLogo.html")

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="/assets/lib/jquery/jquery.min.js"></script>
+    <script src="/assets/lib/angularjs/angular.min.js"></script>
+    <script src="/assets/lib/angular-md5/angular-md5.min.js"></script>
+    <script src="/assets/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    <script src="/assets/javascripts/homePageController.js"></script>
+
+    <link rel="stylesheet" href="/assets/lib/bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/assets/lib/bootstrap-material-design/dist/css/ripples.min.css">
+    <link rel="stylesheet" href="/assets/lib/material-design-icons/iconfont/material-icons.css">
+    <link rel="stylesheet" href="/assets/lib/bootstrap-material-design/dist/css/bootstrap-material-design.min.css">
+    <link rel="stylesheet" href="/assets/lib/bootstrap-social/bootstrap-social.css">
+    <link rel="stylesheet" href="/assets/lib/font-awesome/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Abril+Fatface|Permanent+Marker" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Pontano+Sans" rel="stylesheet">
+    <style type="text/css">
+        html,
+        body {
+            background-color: white;
+        }
+
+        #titleBoard {
+            background: -moz-linear-gradient(top, #008ae6 0%, #66c2ff 100%);
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #008ae6), color-stop(100%, #66c2ff));
+            background: -webkit-linear-gradient(top, #008ae6 0%, #66c2ff 100%);
+            background: -o-linear-gradient(top, #008ae6 0%, #66c2ff 100%);
+            background: -ms-linear-gradient(top, #008ae6 0%, #66c2ff 100%);
+            background: linear-gradient(to bottom, #008ae6 0%, #66c2ff 100%);
+            height: 100%;
+        }
+
+        #loginTitle {
+            /*font-family: 'Permanent Marker', cursive;*/
+            color: whitesmoke;
+            font-size: 43px;
+            /*text-shadow: 4px 4px 4px #aaa;*/
+            text-align: center;
+        }
+
+        #loginButton {
+            font-family: 'Pontano Sans', sans-serif;
+            border: solid 1px #b3b3b3;
+        }
+
+        fieldset.scheduler-border {
+            border: 1px groove #ddd !important;
+            padding: 0 1.4em 1.4em 1.4em !important;
+            margin: 0 0 1.5em 0 !important;
+            -webkit-box-shadow: 0px 0px 0px 0px #000;
+            box-shadow: 0px 0px 0px 0px #000;
+        }
+
+        legend.scheduler-border {
+            font-size: 1.2em !important;
+            font-weight: bold !important;
+            text-align: left !important;
+        }
+
+        /*#loginDiv {
+            @include 'bootstrap-material-design/dist/css/bootstrap-material-design.css';
+        }*/
+    </style>
+</head>
+
+<body ng-app="CMSApp" ng-controller="homePageController">
+<div class="container">
+    <div id="titleBoard" class="jumbotron">
+        <h2 id="loginTitle">Conference Management System</h2>
+    </div>
+</div>
+<div class="container" ng-model="regOrLogin" ng-show="regOrLogin">
+    <fieldset class="scheduler-border" align="center">
+        <legend class="scheduler-border">
+            Register or Login
+        </legend>
+        <button class="btn btn-primary" ng-click="showRegPage()">Register</button>
+        <button class="btn btn-primary" ng-click="showLoginPage()">Login</button>
+    </fieldset>
+    <!-- <fieldset class="scheduler-border">
+        <legend class="scheduler-border">Start Time</legend>
+        <div class="control-group">
+            <label class="control-label input-label" for="startTime">Start :</label>
+            <div class="controls bootstrap-timepicker">
+                <input type="text" class="datetime" type="text" id="startTime" name="startTime" placeholder="Start Time" />
+                <i class="icon-time"></i>
+            </div>
+        </div>
+    </fieldset> -->
+</div>
+<div class="container" ng-model="regPage" ng-show="regPage">
+    <form class="form-horizontal">
+        <fieldset>
+            <!-- Form Name -->
+            <legend align="center">Register a New User</legend>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="fn" style="">User ID</label>
+                <div class="col-md-4">
+                    <input id="fn" name="fn" type="text" placeholder="" class="form-control input-md"
+                           required="required" ng-model="register_username">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="ln">Password</label>
+                <div class="col-md-4">
+                    <input id="ln" name="ln" type="text" placeholder="" class="form-control input-md"
+                           required="required" ng-model="register_password">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="cmpny">Back-up Email</label>
+                <div class="col-md-4">
+                    <input id="cmpny" name="cmpny" type="text" placeholder="" class="form-control input-md" required=""
+                           ng-model="backupEmail">
+                </div>
+            </div>
+            <!-- Select Basic -->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="ctry">Security Question</label>
+                <div class="col-md-4">
+                    <input id="ctry" name="ctry" type="text" placeholder="" class="form-control input-md" required=""
+                           ng-model="securityQuestion">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="ctry">Answer</label>
+                <div class="col-md-4">
+                    <input id="Answer" name="ctry" type="text" placeholder="" class="form-control input-md" required=""
+                           ng-model="answer">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="email">Email</label>
+                <div class="col-md-4">
+                    <input id="email" name="email" type="text" placeholder="" class="form-control input-md" required=""
+                           ng-model="email">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="add1">Title</label>
+                <div class="col-md-4">
+                    <input id="add1" name="add1" type="text" placeholder="Mr, Ms, Dr." class="form-control input-md"
+                           required="" ng-model="userTitle">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="add2">Research areas</label>
+                <div class="col-md-4">
+                    <input id="add2" name="add2" type="text" placeholder="" class="form-control input-md"
+                           ng-model="researchAreas">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="city">First name</label>
+                <div class="col-md-4">
+                    <input id="Fname" name="city" type="text" placeholder="" class="form-control input-md" required=""
+                           ng-model="firstName">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="city">Last name</label>
+                <div class="col-md-4">
+                    <input id="Lname" name="city" type="text" placeholder="" class="form-control input-md" required=""
+                           ng-model="lastName">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="city">Position</label>
+                <div class="col-md-4">
+                    <input id="Position" name="city" type="text" placeholder="" class="form-control input-md"
+                           required=""
+                           ng-model="position">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="city">Affliation</label>
+                <div class="col-md-4">
+                    <input id="Affliation" name="city" type="text" placeholder="" class="form-control input-md"
+                           required=""
+                           ng-model="affliation">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="city">Phone</label>
+                <div class="col-md-4">
+                    <input id="Phone" name="city" type="text" placeholder="" class="form-control input-md" required=""
+                           ng-model="phone">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="city">Fax</label>
+                <div class="col-md-4">
+                    <input id="fax" name="city" type="text" placeholder="" class="form-control input-md" required=""
+                           ng-model="fax">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="city">Address</label>
+                <div class="col-md-4">
+                    <input id="Address" name="city" type="text" placeholder="" class="form-control input-md" required=""
+                           ng-model="address">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="city">City</label>
+                <div class="col-md-4">
+                    <input id="city" name="city" type="text" placeholder="" class="form-control input-md" required=""
+                           ng-model="city">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="city">Country/Region</label>
+                <div class="col-md-4">
+                    <input id="Country" name="city" type="text" placeholder="" class="form-control input-md" required=""
+                           ng-model="countryRegion">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="zip">Zip Code</label>
+                <div class="col-md-4">
+                    <input id="zip" name="zip" type="text" placeholder="" class="form-control input-md" required=""
+                           ng-model="zipcode">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="Comments">Comments</label>
+                <div class="col-md-4">
+                    <input id="Comments" name="ctry" type="text" placeholder="" class="form-control input-md"
+                           required=""
+                           ng-model="comments">
+                </div>
+            </div>
+            <!-- Button -->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="submit"></label>
+                <div class="col-md-4">
+                    <button id="submit" name="submit" class="btn btn-primary" ng-click="regUser()">SUBMIT</button>
+                    <button id="back" name="back" class="btn btn-primary" ng-click="back()">BACK</button>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+</div>
+<div class="container" ng-show="loginPage" id="loginDiv">
+    <div class="row center_div">
+        <div class="col-sm-12">
+            <form class="form-horizontal" id="loginForm" name="loginForm">
+                <!-- <style scoped>
+                @import "bootstrap-material-design/dist/css/bootstrap-material-design.css";
+                </style> -->
+                <div class="form-group has-feedback has-feedback-right" style="width:50%; left: 25%;" align="center">
+                    <!-- <label class="control-label">Username</label> -->
+                    <div class="input-group">
+                            <span class="input-group-addon">
+									<i class="glyphicon glyphicon-user" style="font-size: large"></i>
+								</span>
+                        <input class="usernameL form-control" id="username" name="username" placeholder="Username"
+                               type="text" ng-model="username" autocomplete="off"/>
+                        <p>{{validation.username()}}</p>
+                    </div>
+                </div>
+                <div class="form-group has-feedback has-feedback-right" style="width:50%; left: 25%;" align="center">
+                    <!-- <label class="control-label">Password</label> -->
+                    <div class="input-group" >
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-lock"
+                                                           style="font-size: large"></i></span>
+                        <input class="form-control" id="chatroom" name="password" placeholder="Password" type="password"
+                               ng-model="password"/>
+                        <p>{{validation.password()}}</p>
+                    </div>
+                </div>
+                <br/>
+                <input id="loginButton" class="btn btn-outline-primary btn-lg btn-block" value="Enter LandingPage"
+                       style="font-family: 'Pontano Sans', sans-serif; width:50%; left: 25%;" type="submit"
+                       ng-disabled="logindisable = passworddisable || userdisable" ng-click="login_or_signup()"/>
+                <p>{{message}}</p>
+                <br>
+                <input id="resetButton" class="btn btn-outline-primary btn-lg btn-block" value="Reset Password"
+                       style="font-family: 'Pontano Sans', sans-serif;width:50%; left: 25%;" type="submit"
+                       ng-disabled="resetdisable = userdisable" ng-click="resetPassword(username)"/>
+            </form>
+        </div>
+        <div ng-show="showsQ" class="col-sm-12">
+            <p ng-model="sQuestion">Security Question: {{sQuestion}} helloworld</p>
+            <input type="text" name="securityQuestion" ng-model="sAnswer">
+            <button ng-click="submitQuestion()">submit</button>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

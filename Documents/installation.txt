@@ -1,0 +1,10 @@
+1. Install MySQL database and create a MySQL user named "root" with password "root"
+
+2. Launch MySQL
+mysql.server start
+
+3. Create database named "playdbtest"
+CREATE DATABASE ‘playdbtest’
+
+4. Launch server
+sbt run

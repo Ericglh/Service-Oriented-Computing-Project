@@ -1,0 +1,54 @@
+### Sprint 1
+- Gao, Lianghao
+	- System architecture and database design
+	- Front-end design and developing using angularjs and bootstrap
+	- Search function, print paper
+- Hu, Tianyang
+	- System architecture and database design
+	- User regiser, login, update profile, reset password
+	- Gmail service
+- Li, Minghao
+	- System architecture and database design
+	- Play framework deployment
+	- Integration test
+- Liu, Yiming
+	- System architecture and database design
+	- Back-end development, including models and controllers
+	- Integration test 
+
+### Sprint 2
+- Gao, Lianghao
+	- Database design
+	- Front-end design and developing using angularjs and bootstrap
+- Hu, Tianyang
+	- Database design
+	- Get reviewing conferences/papers, download paper
+- Li, Minghao
+	- Database design
+	- Develop Review model and controller
+	- Integration test
+- Liu, Yiming
+	- Database design
+	- Back-end development, including models and controllers
+
+### Sprint 3
+- Gao, Lianghao
+	- Database design
+	- Front/backend implementation of use case "Configure system"
+	- Front/backend implementation of use case "Logo setting"
+	- Front/backend implementation of use case "Download papers submitted"
+- Hu, Tianyang
+	- Database design
+	- Front/backend implementation of use case "Criteria"
+	- Front/backend implementation of use case "Review questions"
+	- Front/backend implementation of use case "Email template management"
+- Li, Minghao
+	- Database design
+	- Front/backend implementation of use case "Program committee"
+	- Front/backend implementation of use case "Status code"
+	- Front/backend implementation of use case "Download papers submitted"
+- Liu, Yiming
+	- Database design
+	- Front/backend implementation of use case "Research topics"
+	- Front/backend implementation of use case "Open/close submission phase"
+	- Front/backend implementation of use case "Submit a paper on behalf of author"

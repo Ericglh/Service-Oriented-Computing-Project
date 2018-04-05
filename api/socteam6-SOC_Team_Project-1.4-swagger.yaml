@@ -1,0 +1,1539 @@
+swagger: '2.0'
+info:
+  version: "1.4"
+  title: SOC Team Project
+host: localhost:9000
+basePath: /
+tags:
+- name: users
+  description: Operations about user
+- name: papers
+  description: Operations about papers
+- name: conferences
+  description: Operations about conferences
+- name: reviews
+  description: Operations about reviews
+schemes:
+  - http
+paths:
+  /currentUsername:
+    get:
+      tags:
+      - users
+      summary: Get current user name
+      produces:
+      - application/json
+      responses:
+        200:
+          description: User name
+          schema:
+            $ref: '#/definitions/Username'
+  /users:
+    put:
+      tags:
+      - users
+      summary: Register a new user
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: username
+        in: formData
+        description: User name
+        required: true
+        type: string
+      - name: password
+        in: formData
+        description: Password (MD5)
+        required: true
+        type: string
+      - name: securityQuestion
+        in: formData
+        description: Security question
+        required: true
+        type: string
+      - name: answer
+        in: formData
+        description: Security question answer
+        required: true
+        type: string
+      - name: backupEmail
+        in: formData
+        description: Email used to reset password
+        required: true
+        type: string
+      - name: title
+        in: formData
+        description: Mr, Ms, Dr
+        required: false
+        type: string
+      - name: researchAreas
+        in: formData
+        required: false
+        type: string
+      - name: firstName
+        in: formData
+        required: false
+        type: string
+      - name: lastName
+        in: formData
+        required: false
+        type: string
+      - name: position
+        in: formData
+        required: false
+        type: string
+      - name: affiliation
+        in: formData
+        required: false
+        type: string
+      - name: email
+        in: formData
+        required: false
+        type: string
+      - name: phone
+        in: formData
+        required: false
+        type: string
+      - name: fax
+        in: formData
+        required: false
+        type: string
+      - name: address
+        in: formData
+        required: false
+        type: string
+      - name: city
+        in: formData
+        required: false
+        type: string
+      - name: country
+        in: formData
+        description: Country/Region
+        required: false
+        type: string
+      - name: zipCode
+        in: formData
+        required: false
+        type: string
+      - name: comments
+        in: formData
+        required: false
+        type: string
+      responses:
+        201:
+          description: User created
+        400:
+          description: User name exists
+  /users/{username}:
+    get:
+      tags:
+      - users
+      summary: Get user's profile
+      produces:
+      - application/json
+      parameters:
+      - name: username
+        in: path
+        description: User name
+        required: true
+        type: string
+      responses:
+        200:
+          description: User profile
+          schema:
+            $ref: '#/definitions/Profile'
+  /users/profile:
+    post:
+      tags:
+      - users
+      summary: Update user's profile
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: username
+        in: formData
+        description: User name
+        required: true
+        type: string
+      - name: title
+        in: formData
+        description: Mr, Ms, Dr
+        required: false
+        type: string
+      - name: researchAreas
+        in: formData
+        required: false
+        type: string
+      - name: firstName
+        in: formData
+        required: false
+        type: string
+      - name: lastName
+        in: formData
+        required: false
+        type: string
+      - name: position
+        in: formData
+        required: false
+        type: string
+      - name: affiliation
+        in: formData
+        required: false
+        type: string
+      - name: email
+        in: formData
+        required: false
+        type: string
+      - name: phone
+        in: formData
+        required: false
+        type: string
+      - name: fax
+        in: formData
+        required: false
+        type: string
+      - name: address
+        in: formData
+        required: false
+        type: string
+      - name: city
+        in: formData
+        required: false
+        type: string
+      - name: country
+        in: formData
+        description: Country/Region
+        required: false
+        type: string
+      - name: zipCode
+        in: formData
+        required: false
+        type: string
+      - name: comment
+        in: formData
+        required: false
+        type: string
+      responses:
+        200:
+          description: User profile updated
+  /users/login:
+    post:
+      tags:
+      - users
+      summary: Login with user name and password
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: username
+        in: formData
+        description: User name
+        required: true
+        type: string
+      - name: password
+        in: formData
+        description: Password (MD5)
+        required: true
+        type: string
+      responses:
+        200:
+          description: Login succeed
+        401:
+          description: Login failed
+        404:
+          description: User not found
+  /users/logout:
+    post:
+      tags:
+      - users
+      summary: Logout
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      responses:
+        200:
+          description: Logout succeed
+  /users/resetPassword:
+    post:
+      tags:
+      - users
+      summary: Reset password by security questions
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: username
+        in: formData
+        description: User name
+        required: true
+        type: string
+      - name: answer
+        in: formData
+        description: Security question answer
+        required: true
+        type: string
+      responses:
+        200:
+          description: Reset password succeed
+        400:
+          description: Incorrect answer of security question
+  /users/authors/confs/{confId}:
+    get:
+      tags:
+      - users
+      summary: Get all authors of a conference
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: path
+        description: Conference ID
+        required: true
+        type: string
+      responses:
+        200:
+          description: Authors
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Author'
+  /users/reviewers/confs/{confId}:
+    get:
+      tags:
+      - users
+      summary: Get all reviewers of a conference
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: path
+        description: Conference ID
+        required: true
+        type: string
+      responses:
+        200:
+          description: Reviewers
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Reviewer'
+  /papers:
+    put:
+      tags:
+      - papers
+      summary: Submit a paper 
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: formData
+        description: Conference ID
+        required: true
+        type: string
+      - name: title
+        in: formData
+        description: Paper title
+        required: true
+        type: string
+      - name: topic
+        in: formData
+        description: Paper topic
+        required: true
+        type: string
+      - name: email
+        in: formData
+        description: Email of contact author
+        required: true
+        type: string
+      - name: awardCandidate
+        in: formData
+        description: Best student paper award candidate? ("yes" / "no")
+        required: true
+        type: string
+      - name: studentVolunteer
+        in: formData
+        description: Student Volunteer? ("yes" / "no" / "tbd")
+        required: true
+        type: string
+      - name: abstractText
+        in: formData
+        required: true
+        type: string
+      - name: authors
+        in: formData
+        required: true
+        type: string
+        description: (JSON) [{authorFirstName, authorLastName, authorAffiliation, authorEmail}]
+      - name: otherAuthors
+        in: formData
+        required: false
+        type: string
+      responses:
+        200:
+          description: Paper submitted. Send email with paper ID.
+          schema:
+            $ref: '#/definitions/Paper'
+    post:
+      tags:
+      - papers
+      summary: Update paper metadata
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: paperId
+        in: formData
+        description: Paper ID
+        required: true
+        type: string
+      - name: title
+        in: formData
+        description: Paper title
+        required: true
+        type: string
+      - name: topic
+        in: formData
+        description: Paper topic
+        required: true
+        type: string
+      - name: email
+        in: formData
+        description: Email of contact author
+        required: true
+        type: string
+      - name: awardCandidate
+        in: formData
+        description: Best student paper award candidate? ("yes" / "no")
+        required: true
+        type: string
+      - name: studentVolunteer
+        in: formData
+        description: Student Volunteer? ("yes" / "no" / "tbd")
+        required: true
+        type: string
+      - name: abstractText
+        in: formData
+        required: true
+        type: string
+      - name: authors
+        in: formData
+        required: true
+        type: string
+        description: (JSON) [{authorFirstName, authorLastName, authorAffiliation, authorEmail}]
+      - name: otherAuthors
+        in: formData
+        required: false
+        type: string
+      responses:
+        200:
+          description: Paper metadata updated
+  /papers/{paperId}:
+    get:
+      tags:
+      - papers
+      summary: Get paper by Paper ID
+      produces:
+      - application/json
+      parameters:
+      - name: paperId
+        in: path
+        description: Paper ID
+        required: true
+        type: string
+      responses:
+        200:
+          description: paper
+          schema:
+            $ref: '#/definitions/Paper'
+  /papers/confs/{confId}/users/{username}:
+    get:
+      tags:
+      - papers
+      summary: Get all papers of a user for a conference
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: path
+        description: Conference ID
+        required: true
+        type: string
+      - name: username
+        in: path
+        description: User name
+        required: true
+        type: string
+      responses:
+        200:
+          description: All papers information
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Paper'
+  /papers/confs/{confId}/reviewers/{username}:
+    get:
+      tags:
+      - papers
+      summary: Get all papers assigned to a reviewer for a conference
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: path
+        description: Conference ID
+        required: true
+        type: string
+      - name: username
+        in: path
+        description: Reviewer username
+        required: true
+        type: string
+      responses:
+        200:
+          description: All papers information
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Paper'
+  /papers/download/{paperId}:
+    get:
+      tags:
+      - papers
+      summary: Download a paper
+      parameters:
+      - name: paperId
+        in: path
+        description: Paper ID
+        required: true
+        type: string
+      responses:
+        200:
+          description: Download a paper
+  /papers/display/{paperId}:
+    get:
+      tags:
+      - papers
+      summary: Display a paper
+      parameters:
+      - name: paperId
+        in: path
+        description: Paper ID
+        required: true
+        type: string
+      responses:
+        200:
+          description: Display a paper
+  /confs/assignReviewer:
+    post:
+      tags:
+      - conferences
+      summary: Assign a reviewer to a conference
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: formData
+        description: Conference ID
+        required: true
+        type: string
+      - name: username
+        in: formData
+        description: Reviewer username
+        required: true
+        type: string
+      responses:
+        200:
+          description: Conference assigned
+  /confs/{confId}/removeReviewer/{username}:
+    delete:
+      tags:
+      - conferences
+      summary: Remove a reviewer from a conference
+      parameters:
+      - name: confId
+        in: path
+        description: Conference ID
+        required: true
+        type: string
+      - name: username
+        in: path
+        description: Reviewer username
+        required: true
+        type: string
+      responses:
+        200:
+          description: Reviewer removed
+  /confs/assignAdmin:
+    post:
+      tags:
+      - conferences
+      summary: Assign admin to a conference
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: formData
+        description: Conference ID
+        required: true
+        type: string
+      - name: username
+        in: formData
+        description: Reviewer username
+        required: true
+        type: string
+      responses:
+        200:
+          description: Admin assigned
+  /confs/assignPcChair:
+    post:
+      tags:
+      - conferences
+      summary: Assign PC chair to a conference
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: formData
+        description: Conference ID
+        required: true
+        type: string
+      - name: username
+        in: formData
+        description: Reviewer username
+        required: true
+        type: string
+      responses:
+        200:
+          description: PC chair assigned
+  /papers/confs/{confId}:
+    get:
+      tags:
+      - papers
+      summary: Get all papers of a conference
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: path
+        description: Conference ID
+        required: true
+        type: string
+      responses:
+        200:
+          description: All papers information
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Paper'
+  /papers/upload/{paperId}:
+    post:
+      tags:
+      - papers
+      summary: Upload paper
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: paperId
+        in: path
+        description: Paper ID
+        required: true
+        type: string
+      - name: doc
+        in: formData
+        description: Paper doc
+        required: true
+        type: file
+      responses:
+        200:
+          description: File uploaded
+  /papers/status:
+    post:
+      tags:
+      - papers
+      summary: Update paper's status
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: paperId
+        in: formData
+        description: Paper ID
+        required: true
+        type: string
+      - name: status
+        in: formData
+        description: Paper status
+        required: true
+        type: string
+      responses:
+        200:
+          description: Paper status updated
+  /papers/assignReviewer:
+    post:
+      tags:
+      - papers
+      summary: Assign a reviewer to a paper
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: paperId
+        in: formData
+        description: Paper ID
+        required: true
+        type: string
+      - name: username
+        in: formData
+        description: Reviewer username
+        required: true
+        type: file
+      responses:
+        200:
+          description: Paper assigned
+  /papers/removeReviewer:
+    post:
+      tags:
+      - papers
+      summary: Remove a reviewer from a paper
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: paperId
+        in: formData
+        description: Paper ID
+        required: true
+        type: string
+      - name: username
+        in: formData
+        description: Reviewer username
+        required: true
+        type: file
+      responses:
+        200:
+          description: Paper assigned
+  /papers/excel/confs/{confId}/{type}:
+    get:
+      tags:
+      - papers
+      summary: Download an excel containing paper data of a conference
+      parameters:
+      - name: confId
+        in: path
+        description: Conference ID
+        required: true
+        type: string
+      - name: type
+        in: path
+        description: submitted / accepted
+        required: true
+        type: string
+      responses:
+        200:
+          description: Download excel
+  /confs/users/{username}/all:
+    get:
+      tags:
+      - conferences
+      summary: Get all conferences with user privileges
+      parameters:
+      - name: username
+        in: path
+        description: User name
+        required: true
+        type: string
+      responses:
+        200:
+          description: Conferences metadata  
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Conference'
+  /confs/users/{username}/submission:
+    get:
+      tags:
+      - conferences
+      summary: Get all conferences that the user has submitted papers to
+      parameters:
+      - name: username
+        in: path
+        description: User name
+        required: true
+        type: string
+      responses:
+        200:
+          description: Conferences metadata  
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Conference'
+  /confs/reviewers/{username}:
+    get:
+      tags:
+      - conferences
+      summary: Get all conferences that the user has review access
+      parameters:
+      - name: username
+        in: path
+        description: Reviewer username
+        required: true
+        type: string
+      responses:
+        200:
+          description: Conferences metadata  
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Conference'
+  /confs/{confId}:
+    get:
+      tags:
+      - conferences
+      summary: Get conference by ID
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: path
+        description: Conference ID
+        required: true
+        type: string
+      responses:
+        200:
+          description: Conference metadata
+          schema:
+            $ref: '#/definitions/Conference'
+  /confs/configure:
+    post:
+      tags:
+      - conferences
+      summary: Configure conference
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: formData
+        description: Conference ID
+        required: true
+        type: string
+      - name: acronym
+        in: formData
+        description: Conference acronym
+        required: true
+        type: string
+      - name: location
+        in: formData
+        description: Conference location
+        required: true
+        type: string
+      - name: date
+        in: formData
+        description: Conference date
+        required: true
+        type: string
+      - name: submissionDeadline
+        in: formData
+        description: Conference submission deadline
+        required: true
+        type: string
+      responses:
+        200:
+          description: Conference configured
+  /confs/researchTopics:
+    put:
+      tags:
+      - conferences
+      summary: Add a research topic
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: formData
+        description: Conference ID
+        required: true
+        type: string
+      - name: researchTopic
+        in: formData
+        description: JSON {label}
+        required: true
+        type: string
+      responses:
+        200:
+          description: research topic added
+  /confs/{confId}/researchTopics/{researchTopicId}:
+    delete:
+      tags:
+      - conferences
+      summary: Delete a research topic
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: path
+        description: Conference ID
+        required: true
+        type: string
+      - name: researchTopicId
+        in: path
+        description: research topic ID
+        required: true
+        type: string
+      responses:
+        200:
+          description: research topic deleted
+  /confs/criteria:
+    put:
+      tags:
+      - conferences
+      summary: Add a criterion
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: formData
+        description: Conference ID
+        required: true
+        type: string
+      - name: criterion
+        in: formData
+        description: JSON {label, explanations, weight}
+        required: true
+        type: string
+      responses:
+        200:
+          description: criterion added
+  /confs/{confId}/criteria/{criterionId}:
+    delete:
+      tags:
+      - conferences
+      summary: Delete a criterion
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: path
+        description: Conference ID
+        required: true
+        type: string
+      - name: criterionId
+        in: path
+        description: criterion ID
+        required: true
+        type: string
+      responses:
+        200:
+          description: criterion deleted
+  /confs/reviewQuestions:
+    put:
+      tags:
+      - conferences
+      summary: Add a review question
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: formData
+        description: Conference ID
+        required: true
+        type: string
+      - name: reviewQuestion
+        in: formData
+        description: JSON {question}
+        required: true
+        type: string
+      responses:
+        200:
+          description: review question added
+  /confs/{confId}/reviewQuestions/{reviewQuestionId}:
+    delete:
+      tags:
+      - conferences
+      summary: Delete a review question
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: path
+        description: Conference ID
+        required: true
+        type: string
+      - name: reviewQuestionId
+        in: path
+        description: review question ID
+        required: true
+        type: string
+      responses:
+        200:
+          description: review question deleted
+  /confs/statusCodes:
+    put:
+      tags:
+      - conferences
+      summary: Add a status code
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: formData
+        description: Conference ID
+        required: true
+        type: string
+      - name: statusCode
+        in: formData
+        description: JSON {label, mailTemplate, cameraReadyRequired}
+        required: true
+        type: string
+      responses:
+        200:
+          description: status code added
+  /confs/{confId}/statusCodes/{statusCodeId}:
+    delete:
+      tags:
+      - conferences
+      summary: Delete a status code
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: path
+        description: Conference ID
+        required: true
+        type: string
+      - name: statusCodeId
+        in: path
+        description: status code ID
+        required: true
+        type: string
+      responses:
+        200:
+          description: status code deleted
+  /confs/status:
+    post:
+      tags:
+      - conferences
+      summary: Update conference status
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: formData
+        description: Conference ID
+        required: true
+        type: string
+      - name: status
+        in: formData
+        description: Conference status (Active / Archived)
+        required: true
+        type: string
+      responses:
+        200:
+          description: Conference status updated
+  /confs/{confId}/upload/logo/:
+    post:
+      tags:
+      - conferences
+      summary: Upload logo
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: path
+        description: Conference ID
+        required: true
+        type: string
+      - name: logo
+        in: formData
+        description: Conference logo
+        required: true
+        type: file
+      responses:
+        200:
+          description: File uploaded
+  /confs/submissionEmailTemplate:
+    post:
+      tags:
+      - conferences
+      summary: Update conference submission Email template
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: formData
+        description: Conference ID
+        required: true
+        type: string
+      - name: template
+        in: formData
+        description: The template for submission Email. Placeholdes are {title}, {paperId}
+        required: true
+        type: string
+      responses:
+        200:
+          description: template updated
+  /confs/reminderEmailTemplate:
+    post:
+      tags:
+      - conferences
+      summary: Update conference reminder Email template.
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: formData
+        description: Conference ID
+        required: true
+        type: string
+      - name: template
+        in: formData
+        description: The template for reminder Email. Placeholders are {username}, {numPapersNotReviewed}
+        required: true
+        type: string
+      responses:
+        200:
+          description: template updated
+  /confs/reviewerReminder:
+    post:
+      tags:
+      - conferences
+      summary: Send reminder to reviewers of a conference.
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: formData
+        description: Conference ID
+        required: true
+        type: string
+      responses:
+        200:
+          description: Reminder sent
+  /confs/reviewerWithUnreviewedReminder:
+    post:
+      tags:
+      - conferences
+      summary: Send reminder to reviewers of a conference who has unreviewed papers.
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: formData
+        description: Conference ID
+        required: true
+        type: string
+      responses:
+        200:
+          description: Reminder sent
+  /confs/emailAuthors:
+    post:
+      tags:
+      - conferences
+      summary: Send email to authors
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: formData
+        description: Conference ID
+        required: true
+        type: string
+      - name: title
+        in: formData
+        description: Email title
+        required: true
+        type: string
+      - name: content
+        in: formData
+        description: Email content
+        required: true
+        type: string
+      responses:
+        200:
+          description: Email sent
+  /confs/assignPendingReviewer:
+    post:
+      tags:
+      - conferences
+      summary: Assign a user as a "Pending" reviewer to a conference
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: confId
+        in: formData
+        description: Conference ID
+        required: true
+        type: string
+      - name: username
+        in: formData
+        description: User name
+        required: true
+        type: string
+      responses:
+        200:
+          description: Pending reviewer assigned
+  /confs/{confId}/pendingReviewer/{username}:
+    delete:
+      tags:
+      - conferences
+      summary: Remove a user from "Pending" reviewer list of a conference
+      parameters:
+      - name: confId
+        in: path
+        description: Conference ID
+        required: true
+        type: string
+      - name: username
+        in: path
+        description: User name
+        required: true
+        type: string
+      responses:
+        200:
+          description: Pending reviewer removed
+  /reviews:
+    post:
+      tags:
+      - reviews
+      summary: Submit or update a review
+      consumes:
+      - multipart/form-data
+      parameters:
+      - name: paperId
+        in: formData
+        description: Paper ID
+        required: true
+        type: string
+      - name: username
+        in: formData
+        description: Reviewer username
+        required: true
+        type: string
+      - name: content
+        in: formData
+        description: Review content
+        required: true
+        type: string
+      responses:
+        200:
+          description: Review submitted
+  /reviews/papers/{paperId}/reviewers/{username}:
+    get:
+      tags:
+      - reviews
+      summary: Get a review
+      parameters:
+      - name: paperId
+        in: path
+        description: Paper ID
+        required: true
+        type: string
+      - name: username
+        in: path
+        description: Reviewer username
+        required: true
+        type: string
+      responses:
+        200:
+          description: Review metadata
+          schema:
+            $ref: '#/definitions/Review'
+  /reviews/papers/{paperId}:
+    get:
+      tags:
+      - reviews
+      summary: Get a review
+      parameters:
+      - name: paperId
+        in: path
+        description: Paper ID
+        required: true
+        type: string
+      responses:
+        200:
+          description: Review metadata
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Review'
+definitions:
+  Username:
+    type: object
+    properties:
+      username:
+        type: string
+  Profile:
+    type: object
+    properties:
+      securityQuestion:
+        type: string
+      title:
+        type: string
+      researchAreas:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      position:
+        type: string
+      affiliation:
+        type: string
+      email:
+        type: string
+      phone:
+        type: string
+      fax:
+        type: string
+      address:
+        type: string
+      city:
+        type: string
+      country:
+        type: string
+      zipCode:
+        type: string
+      comment:
+        type: string
+  Paper:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Paper ID
+      title:
+        type: string
+      emai:
+        type: string
+      authors:
+        type: array
+        description: (JSON) [{username, authorFirstName, authorLastName, authorAffiliation, authorEmail}]
+      otherAuthors:
+        type: string
+      awardCandidate:
+        type: string
+        description: yes / no
+      studentVolunteer:
+        type: string
+        description: yes / no / tbd
+      abstractText:
+        type: string
+      topic:
+        type: string
+      status:
+        type: string
+      submissionDate:
+        type: string
+      fileUrl:
+        type: string
+      fileSize:
+        type: string
+        description: XX (KB)
+      fileName:
+        type: string
+      reviewers:
+        type: array
+        description: array of reviewer names
+  Conference:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Conference ID
+      acronym:
+        type: string
+      location:
+        type: string
+      date:
+        type: string
+      submissionDeadline:
+        type: string
+      status:
+        type: string
+      reviewAccess:
+        type: string
+        description: yes/no Whether the user has review access
+      adminAccess:
+        type: string
+        description: yes/no Whether the user has admin access
+      pcChairAccess:
+        type: string
+        description: yes/no Whether the user has PC chair access
+      numPapersAssigned:
+        type: string
+        description: number of papers in this conference assigned to this reviewer
+      numPapersReviewed:
+        type: string
+        description: number of papers in this conference that has been reviewed by this reviewer
+      numPapersLeft:
+        type: string
+        description: number of papers in this conference that has not been reviewed by this reviewer
+      researchTopics:
+        type: array
+        items: 
+          $ref: '#/definitions/ResearchTopic'
+      criteria:
+        type: array
+        items:
+          $ref: '#/definitions/Criterion'
+      reviewQuestions:
+        type: array
+        items:
+          $ref: '#/definitions/ReviewQuestion'
+      statusCodes:
+        type: array
+        items:
+          $ref: '#/definitions/StatusCode'
+      logoUrl:
+        type: string
+      submissionEmailTemplate:
+        type: string
+      reminderEmailTemplate:
+        type: string
+  ResearchTopic:
+    type: object
+    properties:
+      id:
+        type: string
+      label:
+        type: string
+  Criterion:
+    type: object
+    properties:
+      id:
+        type: string
+      label:
+        type: string
+      explanations:
+        type: string
+      weight:
+        type: string
+  ReviewQuestion:
+    type: object
+    properties:
+      id:
+        type: string
+      question:
+        type: string
+  StatusCode:
+    type: object
+    properties:
+      id:
+        type: string
+      label:
+        type: string
+      mailTemplate:
+        type: string
+      cameraReadyRequired:
+        type: string
+  Review:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Review ID
+      confId:
+        type: string
+        description: Conference ID
+      paperId:
+        type: string
+        description: Paper ID
+      content:
+        type: string
+        description: Review content
+  Author:
+    type: object
+    properties:
+      username:
+        type: string
+        description: Author name
+      affiliation:
+        type: string
+        description: Affiliation
+      papers:
+        type: array
+        items:
+          $ref: '#/definitions/PaperTitleId'
+  PaperTitleId:
+    type: object
+    properties:
+      title:
+        type: string
+        description: Paper name
+      id:
+        type: string
+        description: Paper ID
+  Reviewer:
+    type: object
+    properties:
+      username:
+        type: string
+        description: Reviewer name
+      pcStatus:
+        type: string
+        description: PENDING / COMMITTEE
+      reviewedPapers:
+        type: array
+        description: Array of reviewed paper ID
+      notReviewedPapers:
+        type: array
+        description: Array of not reviewed paper ID

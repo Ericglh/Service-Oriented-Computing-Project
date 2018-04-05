@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="/assets/lib/jquery/jquery.min.js"></script>
+    <script src="/assets/lib/angularjs/angular.min.js"></script>
+    <script src="/assets/lib/angular-md5/angular-md5.js"></script>
+    <script src="/assets/lib/bootstrap/dist/js/bootstrap.js"></script>
+
+    <script src="/assets/javascripts/landingPage.js"></script>
+
+    <link rel="stylesheet" href="/assets/lib/bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/assets/lib/bootstrap-material-design/dist/css/ripples.min.css">
+    <link rel="stylesheet" href="/assets/lib/material-design-icons/iconfont/material-icons.css">
+    <link rel="stylesheet" href="/assets/lib/bootstrap-social/bootstrap-social.css">
+    <link rel="stylesheet" href="/assets/lib/font-awesome/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="https://cdn.rawgit.com/gilf/ngPrint/master/ngPrint.min.css"/>
+    <script src="https://rawgit.com/gilf/ngPrint/master/ngPrint.min.js"></script>
+
+    <style type="text/css">
+        fieldset {
+            background: #FCFCFC;
+            padding: 16px;
+            border: 1px solid #D5D5D5;
+        }
+
+        .addfields {
+            margin: 10px 0;
+        }
+
+        #choicesDisplay {
+            padding: 10px;
+            background: rgb(227, 250, 227);
+            border: 1px solid rgb(171, 239, 171);
+            color: rgb(9, 56, 9);
+        }
+
+        .remove {
+            background: #C76868;
+            color: #FFF;
+            font-weight: bold;
+            font-size: 21px;
+            border: 0;
+            cursor: pointer;
+            display: inline-block;
+            padding: 4px 9px;
+            vertical-align: top;
+            line-height: 100%;
+        }
+
+        input[type="text"],
+        select {
+            padding: 5px;
+        }
+    </style>
+</head>
+
+<body ng-app="CMSApp" ng-controller="landingPageCtrl">
+<div id="landing-navbar" class="">
+    <div id="navBar" class="navbar navbar-success">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" data-toggle="collapse" data-target="#test1" class="navbar-toggle">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="javascript:void(0)" ng-click="showMainPage()">My CMS</a>
+            </div>
+            <div id="test1" class="collapse navbar-collapse navbar-warning-collapse" aria-expanded="false"
+                 style="height: 1px;">
+                <ul class="nav navbar-nav">
+                    <li ng-class=""><a href="javascript:void(0)" ng-click="showMyConferencePage()">Conferences</a></li>
+                    <li ng-class=""><a href="javascript:void(0)" ng-click="showMyAccountPage()">My Account<span
+                            class="badge ng-binding"></span></a></li>
+                    <li ng-class=""><a href="javascript:void(0)" ng-click=""><span
+                            class="badge ng-binding"></span></a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <form class="navbar-form" role="search">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Search" ng-model="keywordSearch">
+                                <div class="input-group-btn">
+                                    <button class="btn btn-default" type="submit"><i
+                                            class="glyphicon glyphicon-search"></i></button>
+                                </div>
+
+                            </div>
+                        </form>
+                    </li>
+                    <li><a href="javascript:void(0)">{{curUser}}</a></li>
+                    <li><a id="logout" href="javascript:void(0)" ng-click="logout()">Log out</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="mainPage" ng-show="showMainPageBool" class="container">
+    <h2>My Papers</h2>
+    <div class="dropdown">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false" ng-model="curConference">
+            {{curConference.acronym}}
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+            <li ng-repeat="myConference in myConferences">
+                <button class="btn btn-default" style="margin: 5px;" ng-click="chooseConf(myConference)">
+                    {{myConference.acronym}}
+                </button>
+            </li>
+        </ul>
+    </div>
+    <div id="myPaperTable">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Paper Id</th>
+                <th>Authors</th>
+                <th>Topic</th>
+                <th>Status</th>
+                <th>File Size</th>
+                <th>Submission Date</th>
+                <th>Action</th>
+                <th>Choose File</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="paper in myPapers">
+                <td>{{paper.id}}</td>
+                <td><span ng-repeat="author in paper.authors"> {{author.username}} </span></td>
+                <td>{{paper.topic}}</td>
+                <td>{{paper.status}}</td>
+                <td>{{paper.fileSize}}</td>
+                <td>{{paper.submissionDate | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                <td>
+                    <button class="" ng-click="updatePaper(paper.id)">Modify</button>
+                </td>
+
+                <td>
+                    <form action="{{'/papers/upload/' + paper.id}}" method="post" enctype="multipart/form-data">
+                        <p>
+                            <input type="file" name="doc"/>
+                        </p>
+                        <p>
+                            <input type="submit" value="Upload">
+                        </p>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div id="myAccountPage" ng-show="showMyAccountPageBool" class="container">
+    <!-- Title (Mr, Ms, Dr.) Research areas
+ First name  Last name
+ Position  Affliation
+ Email  Phone
+ Fax  Address (text area)
+ City  Country/Region
+ Zip code  Comments -->
+    <h2>Your Profile</h2>
+    <table class="table table-striped">
+        <thead>
+        </thead>
+        <tbody>
+        <tr ng-repeat="(key, value) in showMyProfileArr">
+            <th scope="row">{{key}}</th>
+            <td>{{value}}</td>
+        </tr>
+        </tbody>
+    </table>
+    <button class="btn btn-primary" ng-click="changeProfile()">Change Profile</button>
+</div>
+<div id="changeProfilePage" ng-show="showChangeProfilePage" class="container">
+    <form class="form-horizontal">
+        <fieldset>
+            <!-- Form Name -->
+            <legend align="center">Change Profile</legend>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="email">Email</label>
+                <div class="col-md-4">
+                    <input id="email" name="email" type="text" value="uEmail" placeholder=""
+                           class="form-control input-md" required=""
+                           ng-model="uEmail">
+                </div>
+
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="add1">Title</label>
+                <div class="col-md-4">
+                    <input id="add1" name="add1" type="text" value="uTitle" placeholder="Mr, Ms, Dr."
+                           class="form-control input-md"
+                           required="" ng-model="uTitle">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="add2">Research areas</label>
+                <div class="col-md-4">
+                    <input id="add2" name="add2" type="text" value="uRAreas" placeholder=""
+                           class="form-control input-md"
+                           ng-model="uRAreas">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="city">First name</label>
+                <div class="col-md-4">
+                    <input id="city" name="city" type="text" value="uFName" placeholder="" class="form-control input-md"
+                           required=""
+                           ng-model="uFName">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="city">Last name</label>
+                <div class="col-md-4">
+                    <input id="city" name="city" type="text" value="uLName" placeholder="" class="form-control input-md"
+                           required=""
+                           ng-model="uLName">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="city">Position</label>
+                <div class="col-md-4">
+                    <input id="city" name="city" type="text" value="uPosition" placeholder=""
+                           class="form-control input-md" required=""
+                           ng-model="uPosition">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="city">Affliation</label>
+                <div class="col-md-4">
+                    <input id="city" name="city" type="text" value="uAffliation" placeholder=""
+                           class="form-control input-md" required=""
+                           ng-model="uAffliation">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="city">Phone</label>
+                <div class="col-md-4">
+                    <input id="city" name="city" type="text" value="uPhone" placeholder="" class="form-control input-md"
+                           required=""
+                           ng-model="uPhone">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="city">Fax</label>
+                <div class="col-md-4">
+                    <input id="city" name="city" type="text" value="uFax" placeholder="" class="form-control input-md"
+                           required=""
+                           ng-model="uFax">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="city">Address</label>
+                <div class="col-md-4">
+                    <input id="city" name="city" type="text" value="uAddress" placeholder=""
+                           class="form-control input-md" required=""
+                           ng-model="uAddress">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="city">City</label>
+                <div class="col-md-4">
+                    <input id="city" name="city" type="text" value="uCity" placeholder="" class="form-control input-md"
+                           required=""
+                           ng-model="uCity">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="city">Country/Region</label>
+                <div class="col-md-4">
+                    <input id="city" name="city" type="text" value="uCRegion" placeholder=""
+                           class="form-control input-md" required=""
+                           ng-model="uCRegion">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="zip">Zip Code</label>
+                <div class="col-md-4">
+                    <input id="zip" name="zip" type="text" value="uZipcode" placeholder="" class="form-control input-md"
+                           required=""
+                           ng-model="uZipcode">
+                </div>
+            </div>
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="ctry">Comments</label>
+                <div class="col-md-4">
+                    <input id="ctry" name="ctry" type="text" value="uComments" placeholder=""
+                           class="form-control input-md" required=""
+                           ng-model="uComments">
+                </div>
+            </div>
+            <!-- Button -->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="submit"></label>
+                <div class="col-md-4">
+                    <button id="submit" name="submit" class="btn btn-primary" ng-click="updateUProfile()">SUBMIT
+                    </button>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+</div>
+<div id="myConferencePage" ng-show="showMyConferencePageBool" class="container">
+    <label for="singleSelect"> Select conference status: </label><br>
+    <select name="singleSelect" id="singleSelect" ng-model="keywordSearch1">
+        <option value="">---All Status---</option> <!-- not selected / blank option -->
+        <option value="Active">Active</option> <!-- interpolation -->
+        <option value="Archived">Archived</option>
+    </select><br>
+    <p></p>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Conference ID</th>
+            <th>Conference acronym</th>
+            <th>Conference location</th>
+            <th>Conference date</th>
+            <th>Submission deadline</th>
+            <th>
+                Status
+            </th>
+            <th>Submit</th>
+            <th>Paper</th>
+            <th>Review</th>
+            <th>Admin</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="conf in allConf | filter : keywordSearch | filter : keywordSearch1">
+            <!--<td>{{keywordSearch}}</td>-->
+            <td>{{conf.id}}</td>
+            <td>{{conf.acronym}}</td>
+            <td>{{conf.location}}</td>
+            <td>{{conf.date}}</td>
+            <td>{{conf.submissionDeadline}}</td>
+            <td>{{conf.status}}</td>
+            <td><a href="javascript:void(0)" ng-click="submitPaper(conf)">{{conf.status == "Archived" ? "" :
+                "Submit"}}</a></td>
+            <td>
+                <button class="btn btn-default" ng-click="toMainPage(conf)">Paper</button>
+            </td>
+            <td>
+                <button class="btn btn-default" name="subject" type="" value=""
+                        ng-click="reviewAccess(conf.reviewAccess, conf.id)">{{conf.reviewAccess == 'no' ? 'No Access' :
+                    'Access'}}
+                </button>
+            </td>
+            <td>
+                <button class="btn btn-default" name="subject" type="" value=""
+                        ng-click="adminAccess(conf.adminAccess, conf.pcChairAccess, conf.id)">{{(conf.adminAccess == 'no' && conf.pcChairAccess == 'no') ? 'No Access' :
+                    'Access'}}
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div id="submitPaperPage" ng-show="showsubmitPaperPageBool" class="container">
+    <h2>This is Submit Page</h2>
+    <form>
+        <div class="form-group">
+            <label for="">Title</label>
+            <input class="form-control" id="paperTitle" ng-model="pTitle" required>
+        </div>
+        <div class="form-group">
+            <label for="">Topic</label>
+            <input class="form-control" id="paperTopic" ng-model="pTopic" required>
+        </div>
+        <div class="form-group">
+            <label for="">Contact Email</label>
+            <input class="form-control" id="paperEmail" ng-model="pEmail" required>
+            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        </div>
+        <div class="form-group">
+            <label for="">Confirm Email</label>
+            <input class="form-control" id="paperTitle" ng-model="pCEmail" required>
+            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        </div>
+        <div class="form-group">
+            <label for="exampleTextarea">List of Users</label>
+            <fieldset data-ng-repeat="choice in choices">
+                <input type="text" ng-model="choice.authorFirstName" name="" placeholder="First Name">
+                <input type="text" ng-model="choice.authorLastName" name="" placeholder="Last Name">
+                <input type="text" ng-model="choice.authorAffiliation" name="" placeholder="Affiliation">
+                <input type="text" ng-model="choice.authorEmail" name="" placeholder="Email">
+                <button class="remove" ng-show="$last" ng-click="removeChoice()">-</button>
+            </fieldset>
+            <button class="addfields btn btn-default" ng-click="addNewChoice()">Add fields</button>
+        </div>
+        <div class="form-group">
+            <label for="exampleTextarea">Other Users</label>
+            <textarea class="form-control" id="exampleTextarea" rows="3" ng-model="pOUser" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="exampleTextarea">Abstract</label>
+            <textarea class="form-control" id="exampleTextarea" rows="3" ng-model="pAbstract" required></textarea>
+        </div>
+        <fieldset class="form-group">
+            <legend>Best student paper award candidate?</legend>
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input type="radio" class="form-check-input" name="optionsRadios" id="" value="yes" ng-model="bestP"
+                           checked> Yes
+                </label>
+            </div>
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input type="radio" class="form-check-input" name="optionsRadios" id="" value="no" ng-model="bestP">
+                    No
+                </label>
+            </div>
+        </fieldset>
+        <fieldset class="form-group">
+            <legend>Student Volunteer?</legend>
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input type="radio" class="form-check-input" name="optionsRadios1" value="yes" ng-model="SV"
+                           checked> Yes
+                </label>
+            </div>
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input type="radio" class="form-check-input" name="optionsRadios1" value="no" ng-model="SV"> No
+                </label>
+            </div>
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input type="radio" class="form-check-input" name="optionsRadios1" value="other" ng-model="SV"> To
+                    be decided
+                </label>
+            </div>
+        </fieldset>
+        <button type="submit" class="btn btn-primary" ng-click="submitPaper1()"
+                ng-disabled="!pTitle || !pAbstract || !SV || !bestP">Submit
+        </button>
+    </form>
+</div>
+<div id="updatePaperPage" ng-show="showUpdatePaperPageBool" class="container">
+    <h2>This is Update Page</h2>
+    <form>
+        <div class="form-group">
+            <label for="">Title</label>
+            <input class="form-control" id="paperTitle" ng-model="uTitle" required>
+        </div>
+        <div class="form-group">
+            <label for="">Topic</label>
+            <input class="form-control" id="paperTopic" ng-model="uTopic" required>
+        </div>
+        <div class="form-group">
+            <label for="">Contact Email</label>
+            <input class="form-control" id="paperEmail" ng-model="uEmail" required>
+            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        </div>
+        <div class="form-group">
+            <label for="exampleTextarea">List of Users</label>
+            <fieldset data-ng-repeat="choice in choices">
+                <input type="text" ng-model="choice.authorFirstName" name="" placeholder="First Name">
+                <input type="text" ng-model="choice.authorLastName" name="" placeholder="Last Name">
+                <input type="text" ng-model="choice.authorAffiliation" name="" placeholder="Affiliation">
+                <input type="text" ng-model="choice.authorEmail" name="" placeholder="Email">
+                <button class="remove" ng-show="$last" ng-click="removeChoice()">-</button>
+            </fieldset>
+            <button class="addfields btn btn-default" ng-click="addNewChoice()">Add fields</button>
+        </div>
+        <div class="form-group">
+            <label for="exampleTextarea">Other Users</label>
+            <textarea class="form-control" id="exampleTextarea" rows="3" ng-model="uOUser" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="exampleTextarea">Abstract</label>
+            <textarea class="form-control" id="exampleTextarea" rows="3" ng-model="uAbstract" required></textarea>
+        </div>
+        <!-- <div class="form-group">
+            <label for="exampleInputFile">File input</label>
+            <input type="file" class="form-control-file" id="exampleInputFile" aria-describedby="fileHelp" ng-model="fileupload" required>
+        </div> -->
+        <fieldset class="form-group">
+            <legend>Best student paper award candidate?</legend>
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input type="radio" class="form-check-input" name="optionsRadios" id="" value="yes"
+                           ng-model="ubestP" checked> Yes
+                </label>
+            </div>
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input type="radio" class="form-check-input" name="optionsRadios" id="" value="no"
+                           ng-model="ubestP"> No
+                </label>
+            </div>
+        </fieldset>
+        <fieldset class="form-group">
+            <legend>Student Volunteer?</legend>
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input type="radio" class="form-check-input" name="optionsRadios1" value="yes" ng-model="uSV"
+                           checked> Yes
+                </label>
+            </div>
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input type="radio" class="form-check-input" name="optionsRadios1" value="no" ng-model="uSV"> No
+                </label>
+            </div>
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input type="radio" class="form-check-input" name="optionsRadios1" value="other" ng-model="uSV"> To
+                    be decided
+                </label>
+            </div>
+        </fieldset>
+        <button type="submit" class="btn btn-primary" ng-click="updatePaperForm()">Submit</button>
+    </form>
+</div>
+<div id="showReviewPaperPage" ng-show="showReviewPaperPageBool" class="container">
+    <h3>This is review page</h3>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Conference Name</th>
+            <th>Papers Assigned</th>
+            <th>Papers Reviewed</th>
+            <th>Papers Left</th>
+            <th>Detail</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="myReview in myReviews">
+            <td>{{myReview.acronym}}</td>
+            <td>{{myReview.numPapersAssigned}}</td>
+            <td>{{myReview.numPapersReviewed}}</td>
+            <td>{{myReview.numPapersLeft}}</td>
+            <th>
+                <button id="" name="" class="btn btn-primary" ng-click="showAssignedPage(myReview)">Detail
+                </button>
+            </th>
+        </tr>
+        </tbody>
+    </table>
+    <div id="AssignPage" ng-show="showAssignedTable">
+        <h4>This is the assign table</h4>
+        <p>Here is the list of papers assigned to you. Use the download link to get the file,
+            and the submit review link to enter or modify your review results.
+        </p>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Paper ID</th>
+                <th>Papers Title</th>
+                <th>Authors</th>
+                <th>Download</th>
+                <th>Update my review</th>
+                <th>See my review</th>
+                <!--<th>Print my review</th>-->
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="myAssign in myAssigns">
+                <td>{{myAssign.id}}</td>
+                <td>{{myAssign.title}}</td>
+                <td>
+                    <span ng-repeat="author in myAssign.authors">{{author.username }} </span>
+                </td>
+
+                <td><a id="" name="" class="btn btn-primary" ng-href="papers/download/{{myAssign.id}}"
+                       ng-show="myAssign.fileUrl != null">Download Paper
+                </a></td>
+
+                <td>
+                    <button id="" name="" class="btn btn-primary" ng-click="showUpdateReview(myAssign.id, 1)">Update my
+                        Review
+                    </button>
+                </td>
+                <td>
+                    <button id="" name="" class="btn btn-primary" ng-click="showUpdateReview(myAssign.id, 2)">See my
+                        Review
+                    </button>
+                </td>
+                <!--<td><button id="" name="" class="btn btn-primary" ng-click="showUpdateReview(myAssign.id, 2)">Print Review</button>-->
+                <!--</td>-->
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+    <div id="myReview" ng-show="updateReviewFormBool"><!--updateReviewFormBool-->
+        <h2>Review Form:</h2>
+        <form>
+            <div class="form-group">
+                <textarea class="form-control" rows="5" id="printThisElement" ng-model="myCurReview" ng-model="readOnly"
+                          ng-readonly="readOnly">{{myCurReview}}</textarea>
+                <button type="submit" class="btn btn-primary" ng-click="submitReview()" ng-disabled="readOnly">Submit
+                </button>
+                <button type="submit" class="btn btn-primary" ng-click="exitReview()">Exit</button>
+                <button class="btn btn-primary" ng-print print-element-id="printThisElement">Print</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!--<div id="adminPage" ng-show="showAdminPageBool" class="container">-->
+<div id="adminPage" class="container">
+    <div id="administrativePage" ng-show="showAdminPageBool">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th></th>
+                <th style="text-align: center;"><h2>Administrative Tasks</h2></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <button type="button" class="btn btn-default btn-block" ng-click="showConfigurePage()">Configure the
+                        System
+                    </button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-default btn-block" ng-click="showProgramCommittee()">Program
+                        Committee
+                    </button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-default btn-block" ng-click="showResearchTopic()">Research
+                        Topics
+                    </button>
+                </td>
+            </tr>
+            <tr>
+
+                <td>
+                    <button type="button" class="btn btn-default btn-block" ng-click="showCriteria()">Criteria</button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-default btn-block" ng-click="showReviewQuestions()">Review
+                        questions
+                    </button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-default btn-block" ng-click="showStatusCode()">Status code
+                    </button>
+                </td>
+
+            </tr>
+            <tr>
+
+                <td>
+                    <button type="button" class="btn btn-default btn-block" ng-click="showSubmissionPhase()">Submission
+                        Phase
+                    </button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-default btn-block" ng-click="showEmailPage()">Email Template
+                        Management
+                    </button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-default btn-block" ng-click="showDownloadPapers()">Download
+                        Papers
+                    </button>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                <td>
+                    <button type="button" class="btn btn-default btn-block" ng-click="showSubmitPapers()">Submit
+                        Papers
+                    </button>
+                </td>
+                </td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <!--ng-show="showPCChairPageBool"   showAdminPageBool-->
+    <div id="PCChairPage" ng-show="showPCChairPageBool">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th></th>
+                <th style="text-align: center;"><h2>PC Chair Tasks</h2></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <button type="button" class="btn btn-default btn-block" ng-click="showConfigurePage()">Configure the
+                        System
+                    </button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-default btn-block" ng-click="showProgramCommittee()">Program
+                        Committee
+                    </button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-default btn-block" ng-click="showEmailPage()">Email Template
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button type="button" class="btn btn-default btn-block" ng-click="showMailsPage()">Mails
+                    </button>
+                </td>
+                <td class="dropdown" style="width: 50%;">
+                    <button class="btn btn-default dropdown-toggle btn-block" type="button" data-toggle="dropdown">Submission Phase
+                        <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        <li><a ng-click="showPCReviewM()">Reviewer management</a></li>
+                        <li><a ng-click="showListOfSP()">List of Submitted papers</a></li>
+                        <li><a ng-click="showManualAssign()">Manual Assignment</a></li>
+                        <li><a ng-click="ListOfAuthors()">List of Authors</a></li>
+                        <li><a ng-click="showReviewState()">Review State</a></li>
+                        <li><a ng-click="showSendReminders()">Send Reminders</a></li>
+                        <li><a ng-click="showPendingM()">Pending Management</a></li>
+                        <li><a ng-click="showSearchPaperById()">Search Paper By Id</a></li>
+                    </ul>
+                </td>
+                <td class="dropdown">
+                    <button class="btn btn-default dropdown-toggle btn-block" type="button" data-toggle="dropdown">Selection Phase
+                        <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        <li><a ng-click="showStatusOfPapers()">Status of papers</a></li>
+                        <li><a ng-click="showSendRemindersNotSubmit()">Send reminders</a></li>
+                        <li><a ng-href="papers/excel/confs/{{downloadSub}}/submitted">Download file of submitted papers</a></li>
+                        <li><a ng-href="papers/excel/confs/{{downloadAcc}}/accepted">Download file of accepted papers</a></li>
+                    </ul>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!--This is administrator div-->
+
+    <div id="configureSystemDiv" ng-show="configurePage">
+        <p>This is configure page!</p>
+        <div id="changeConfigure">
+            <form>
+                <div class="form-group">
+                    <label>Conference acronym:</label>
+                    <input type="text" class="form-control" ng-model="confName" value="confName">
+                </div>
+                <div class="form-group">
+                    <label>Date:</label>
+                    <input type="text" class="form-control" ng-model="confDate" value="confDate">
+                </div>
+                <div class="form-group">
+                    <label>Location:</label>
+                    <input type="text" class="form-control" ng-model="confLocation" value="confLocation">
+                </div>
+                <div class="form-group">
+                    <label>submissionDeadline:</label>
+                    <input type="text" class="form-control" ng-model="confSubmissionDeadline"
+                           value="confSubmissionDeadline">
+                </div>
+                <button type="submit" class="btn btn-default" ng-click="changeConfigure()">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="submissionPhaseDiv" ng-show="submissionPhase">
+        <p>This is submission phase page!</p>
+        <div>
+            <!--<div class="form-group">-->
+            <!--<label>Please input a username you want to assign:</label>-->
+            <!--<input type="text" class="form-control" ng-model="assignReview">-->
+            <!--</div>-->
+            <form>
+                <label class="radio-inline">
+                    <input type="radio" name="optradio" value="Active" ng-model="phase">Active
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="optradio" value="Archived" ng-model="phase">Archived
+                </label>
+            </form>
+            <button type="submit" class="btn btn-default" ng-click="changePhase()">Submit</button>
+        </div>
+    </div>
+
+    <div id="addReviewerDiv" ng-show="programCommittee">
+        <p>This is program committee page!</p>
+        <div id="addReviewer">
+            <form>
+                <div class="form-group">
+                    <label>Please input a username you want to assign:</label>
+                    <input type="text" class="form-control" ng-model="assignReview">
+                </div>
+                <button type="submit" class="btn btn-default" ng-click="assignReviewer()">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="submitPaperDiv" ng-show="submitPapers">
+        <p>This is submit paper page!</p>
+        <div id="submitPaper">
+            <form>
+                <div class="form-group">
+                    <label>Please input a email:</label>
+                    <input type="text" class="form-control" ng-model="submitUsername1">
+                </div>
+                <button type="submit" class="btn btn-default" ng-click="submitPaperOn()">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="downloadPaperDiv" ng-show="downloadPapers">
+        <h3>All papers</h3>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Download</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="paper in adminAllPapers">
+                <td>{{paper.title}}</td>
+                </td>
+                <td><a name="" class="btn btn-default btn-block" ng-href="papers/download/{{paper.id}}"
+                       ng-show="paper.fileUrl != null">Download Paper
+                </a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="criteriaDiv" ng-show="criteria">
+        <p>This is criteria page!</p>
+        <div id="changeCriteria">
+            <form>
+                <div class="form-group">
+                    <label for="label">Label:</label>
+                    <input type="text" class="form-control" id="label" ng-model="criteriaLabel">
+                </div>
+                <div class="form-group">
+                    <label for="explanation">Explanation:</label>
+                    <!--<input type="textarea" class="form-control" id="explanation">-->
+                    <textarea class="form-control" rows="5" id="explanation" ng-model="criteriaExp"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="weight">Weight:</label>
+                    <input type="text" class="form-control" id="weight" ng-model="criteriaWeight">
+                </div>
+                <button type="submit" class="btn btn-default" ng-click="addCriteria()"
+                        ng-disabled="criteriaWeight.length == 0 || criteriaWeight == '' || criteriaLabel.length == 0 || criteriaLabel == '' || criteriaExp.length == 0 || criteriaExp == ''">
+                    Add a criteria
+                </button>
+
+            </form>
+        </div>
+
+        <div id="criteriaTable">
+            <h3>Lines in table Criteria</h3>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Label</th>
+                    <th>Explanations</th>
+                    <th>Weight</th>
+                    <th>Delete</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="cri in criterias">
+                    <td>{{cri.label}}</td>
+                    <td>{{cri.explanations}}</td>
+                    <td>{{cri.weight}}</td>
+                    <td>
+                        <button type="button" class="btn btn-default btn-block" ng-click="deleteCriteria(cri.id)">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="researchTopicDiv" ng-show="researchTopic">
+        <p>This is research topic div!</p>
+        <div id="changeResearchTopic">
+            <form>
+                <div class="form-group">
+                    <label for="researchLabel">Label:</label>
+                    <input type="text" class="form-control" id="researchLabel" ng-model="researchTopicText">
+                </div>
+                <button type="submit" class="btn btn-default" ng-click="addResearchTopic()"
+                        ng-disabled="researchTopicText.length == 0 || researchTopicText == ''">Insert a Topic
+                </button>
+            </form>
+        </div>
+
+        <div id="researchTable">
+            <h3>Lines in table Research Topics</h3>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Label</th>
+                    <th>Delete</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="topic in researchTopics">
+                    <td>{{topic.id}}</td>
+                    <td>{{topic.label}}</td>
+                    <td>
+                        <button type="button" class="btn btn-default" ng-click="deleteTopic(topic.id)">Delete
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="reviewQuestionsDiv" ng-show="reviewQuestions">
+        <p>This is review Questions div!</p>
+        <div id="changeReviewQuestions">
+            <form>
+                <div class="form-group">
+                    <label for="researchLabel">Label:</label>
+                    <input type="text" class="form-control" id="reviewQuestionsLabel" ng-model="reviewQ">
+                </div>
+                <button type="submit" class="btn btn-default" ng-click="addReviewQuestions()"
+                        ng-disabled="reviewQ.length == 0 || reviewQ == ''">Insert a Question
+                </button>
+            </form>
+        </div>
+
+        <div id="reviewQuestionsTable">
+            <h3>Lines in review questions</h3>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Label</th>
+                    <th>Delete</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="rQ in reviewQuestions">
+                    <td>{{rQ.question}}</td>
+                    <td>
+                        <button type="button" class="btn btn-default" ng-click="deleteReviewQuestion(rQ.id)">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="statusCodeDiv" ng-show="statusCode">
+        <p>Add a row in table PaperStatus</p>
+        <div id="changeStatusCodeDiv">
+            <form>
+                <div class="form-group">
+                    <label for="statusLabel">Label:</label>
+                    <input type="text" class="form-control" id="statusLabel" ng-model="scLabel">
+                </div>
+                <div class="form-group">
+                    <label for="mailTemplateLabel">MailTemplate:</label>
+                    <input type="text" class="form-control" id="mailTemplateLabel" ng-model="scMailTemplateLabel">
+                </div>
+                <div class="form-group">
+                    <label>CameraReadyRequired: </label>
+                    <label><input type="checkbox" ng-model="cameraRequired"></label>
+                </div>
+                <button type="submit" class="btn btn-default" ng-click="addStatusCode()"
+                        ng-disabled="scLabel.length == 0 || scLabel == '' || scMailTemplateLabel.length == 0 || scMailTemplateLabel == ''">
+                    Insert a Status Code
+                </button>
+            </form>
+        </div>
+
+        <div id="statusCodeTable">
+            <h3>List of existing rows</h3>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Label</th>
+                    <th>mailTemplate</th>
+                    <th>cameraReadyRequired</th>
+                    <th>Delete</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="sC in statusCodes1">
+                    <td>{{sC.label}}</td>
+                    <td>{{sC.mailTemplate}}</td>
+                    <td>{{sC.cameraReadyRequired}}</td>
+                    <td>
+                        <button type="button" class="btn btn-default" ng-click="deleteStatusCode(sC.id)">Delete
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="emailTemplateDiv" ng-show="emailPage">
+        <p>Generally, there are mainly three kinds of emails that would be sent to authors according to status codes
+            of their papers. You can edit and modify templates for such emails. Note that words delimited by the
+            curely brackets, { and } will be handled by the system itself, so please do not modify them</p>
+        <div id="templateTable">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Templates</th>
+                    <th>View</th>
+                    <th>Modify</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        <button type="button" class="btn btn-default" ng-click="">Submission Template</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-default" ng-click="viewSubmissionTemplate()">View
+                        </button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-default" ng-click="modifySubmissionTemplate()">Modify
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button type="button" class="btn btn-default" ng-click="">Reminder Template</button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-default" ng-click="viewReminderTemplate()">View
+                        </button>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-default" ng-click="modifyReminderTemplate()">Modify
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="TemplateDiv" class="form-group">
+            <div id="viewSubmission" ng-show="showViewSub">
+                <label>Submission Template:</label>
+                <textarea class="form-control" rows="10" id="viewSub" ng-readonly="true"
+                          ng-model="submissionTemplate" value="submissionTemplate"></textarea>
+            </div>
+            <div id="modifySubmission" ng-show="showModifySub">
+                <label>Submission Template:</label>
+                <textarea class="form-control" rows="10" id="modifySub" ng-model="submissionTemplate"
+                          value="submissionTemplate"></textarea>
+                <button class="btn btn-default" ng-click="submitSub(submissionTemplate)">Submit</button>
+            </div>
+            <div id="viewReminder" ng-show="showViewRem">
+                <label for="viewRem">Reminder Template:</label>
+                <textarea class="form-control" rows="10" id="viewRem" ng-readonly="true" ng-model="reminderTemplate"
+                          value="reminderTemplate"></textarea>
+            </div>
+            <div id="modifyReminder" ng-show="showModifyRem">
+                <label for="modifyRem">Reminder Template:</label>
+                <textarea class="form-control" rows="10" id="modifyRem" ng-model="reminderTemplate"
+                          value="reminderTemplate"></textarea>
+                <button class="btn btn-default" ng-click="submitRem(reminderTemplate)">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <!--This is PC Chair div-->
+    <div id="PCReviewerManage" ng-show="showPCReviewManageBool">
+        <p>This is PC Review page</p>
+        <!--listOfReviewers-->
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="lr in listOfReviewers">
+                <td>{{lr.username}}</td>
+                <td>{{lr.pcStatus}}</td>
+                <td><button type="button" class="btn btn-default" ng-click="deleteAReviewer(lr.username)">
+                    Delete
+                </button></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="PCSubmittedPaper" ng-show="PCSubmitPaperBool">
+        <p>This is submit paper page</p>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Reviewer</th>
+                <th>Authors</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="sp1 in listOfSP">
+                <td>{{sp1.title}}</td>
+                <td>{{sp1.reviewers}}</td>
+                <td ng-repeat="i in sp1.authors">
+                    <span>
+                        {{i.authorFirstName}} {{i.authorLastName}};
+                    </span>
+                    <!--{{sp1.authors.authorFirstName}}-->
+                </td>
+                <td>{{sp1.status}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="PCReviewStateBool" ng-show="showReviewStateBool">
+        <p>This is ReviewState page</p>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Reviewer</th>
+                <th>Papers Reviewed</th>
+                <th>Papers Left</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="sp in listOfReviewStates">
+                <td>{{sp.username}}</td>
+                <td>
+                    <span ng-repeat="n in sp.reviewedPapers">
+                        {{n}};
+                    </span>
+                </td>
+                <td>
+                    <span ng-repeat="w in sp.notReviewedPapersJa">{{w}}</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <div id="PCSendReminders" ng-show="showSendRemindersBool">
+        <p>This is SendReminders page</p>
+        <div id="sendReminderDiv">
+            <form>
+                <button type="submit" class="btn btn-default" ng-click="sendReminderToAllReviewers()">
+                    Send Reminders
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="PCPendingM" ng-show="showPendingMBool">
+        <p>This is PendingM page</p>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="sp1 in pendingReviewers">
+                <td>{{sp1.username}}</td>
+                <td>
+                    <button type="submit" class="btn btn-default" ng-click="deletePendingReviewer(sp1.username)">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div id="addPendingReviewer">
+            <form>
+                <div class="form-group">
+                    <label for="pendingR">Input a name:</label>
+                    <input type="text" class="form-control" id="pendingR" ng-model="pendingReviewer">
+                </div>
+                <button type="submit" class="btn btn-default" ng-click="addPendingReviewer()"
+                        ng-disabled="pendingReviewer == '' || pendingReviewer.length == 0">
+                    Submit
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="ManualAssign" ng-show="showManualAssignBool">
+        <p>This is ManualAssign page</p>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Reviewer</th>
+                <th>Authors</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="sp1 in listOfManual">
+                <td>{{sp1.id}}</td>
+                <td>{{sp1.title}}</td>
+                <td>{{sp1.reviewers}}</td>
+                <td ng-repeat="i in sp1.authors">
+                    <span>
+                        {{i.authorFirstName}} {{i.authorLastName}};
+                    </span>
+                    <!--{{sp1.authors.authorFirstName}}-->
+                </td>
+                <td>{{sp1.status}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <div id="assignRemove">
+            <p>Manually assign a reviewer of a paper</p>
+            <form>
+                <div class="form-group">
+                    <label for="assignID">Input a Paper Id:</label>
+                    <input type="text" class="form-control" id="assignID" ng-model="assignPaperID">
+                </div>
+                <div class="form-group">
+                    <label for="assignName">Input a Username:</label>
+                    <input type="text" class="form-control" id="assignName" ng-model="assignUsername">
+                </div>
+                <button type="submit" class="btn btn-default" ng-click="manualAssign()"
+                        ng-disabled="assignPaperID == '' || assignPaperID.length == 0 || assignUsername == '' || assignUsername.length == 0">
+                    Submit
+                </button>
+            </form>
+            <hr />
+            <p>Manually remove a reviewer of a paper</p>
+            <form>
+                <div class="form-group">
+                    <label for="removeID">Input a Paper Id:</label>
+                    <input type="text" class="form-control" id="removeID" ng-model="removePaperID">
+                </div>
+                <div class="form-group">
+                    <label for="removeName">Input a Username:</label>
+                    <input type="text" class="form-control" id="removeName" ng-model="removeUsername">
+                </div>
+                <button type="submit" class="btn btn-default" ng-click="manualRemove()"
+                        ng-disabled="removePaperID == '' || removePaperID.length == 0 || removeUsername == '' || removeUsername.length == 0">
+                    Submit
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="ListofAuthors" ng-show="showListOfAuthorsBool">
+        <p>This is List of Authors page</p>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Papers</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="la in listOfAuthors">
+                <td>{{la.username}}</td>
+                <td ng-repeat="p in la.papers">
+                    {{p.title}};
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="PCSearchPaperById" ng-show="showSearchPaperByIdBool">
+        <p>This is SearchPaperById page</p>
+        <div>
+            <form>
+                <div class="form-group">
+                    <label for="searchpaper">Input a Paper Id:</label>
+                    <input type="text" class="form-control" id="searchpaper" ng-model="searchPaperId">
+                </div>
+                <button type="submit" class="btn btn-default" ng-click="searchPById()"
+                        ng-disabled="searchPaperId == '' || searchPaperId.length == 0">
+                    Submit
+                </button>
+            </form>
+        </div>
+        <div id="showSearchRes">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Reviewer</th>
+                    <th>Authors</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>{{searchP.title}}</td>
+                    <td>{{searchP.reviewers}}</td>
+                    <td ng-repeat="i in searchP.authors">
+                    <span>
+                        {{i.authorFirstName}} {{i.authorLastName}};
+                    </span>
+                        <!--{{sp1.authors.authorFirstName}}-->
+                    </td>
+                    <td>{{searchP.status}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- selection phase-->
+    <div id="PCStatusOfPaper" ng-show="showStatusOfPaperBool">
+        <p>This is StatusOfPaper page</p>
+
+        <div id="showStatusPapers">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Title</th>
+                    <th>Status</th>
+                    <th>Review</th>
+                    <th>Modify</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="la in listOfPapers | filter : filterStatus">
+                    <td>{{la.id}}</td>
+                    <td>
+                        {{la.title}}
+                    </td>
+                    <td>{{la.status}}</td>
+                    <td>
+                        <button class="btn btn-default" type="button" ng-click="showReviewsDetail(la.id)">Show Reviews</button>
+                    </td>
+                    <td class="dropdown">
+                        <button class="btn btn-default dropdown-toggle btn-block" type="button" data-toggle="dropdown">Select a Status
+                            <span class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li><a ng-click="modifyAccepted(la.id)">Accept</a></li>
+                            <li><a ng-click="modifyRejected(la.id)">Reject</a></li>
+                            <li><a ng-click="modifyMoved(la.id)">Moved</a></li>
+                            <li><a ng-click="modifyTransferred(la.id)">Transferred</a></li>
+                        </ul>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="reviewsDetail" ng-show="showDetailReviewsBool">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Reviews</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="la in listOfReviews">
+                    <td>{{la.content}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="dropdown" style="width: 50%; left: 25%;">
+            <button class="btn btn-default dropdown-toggle btn-block" type="button" data-toggle="dropdown">Select a Status
+                <span class="caret"></span></button>
+            <ul class="dropdown-menu">
+                <li><a ng-click="showAll()">Show All Paper</a></li>
+                <li><a ng-click="showAccepted()">Show Accepted Paper</a></li>
+                <li><a ng-click="showRejected()">Show Rejected Paper</a></li>
+                <li><a ng-click="showMoved()">Show Moved Paper</a></li>
+                <li><a ng-click="showTransferred()">Show Transferred Paper</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="PCSendRemindersNotSubmit" ng-show="showSendRemindersNotSubmitBool">
+        <p>This is SendRemindersNotSubmit page</p>
+
+        <div>
+            <form>
+                <button type="submit" class="btn btn-default" ng-click="remind()">
+                    Send Reminders
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="PCMails" ng-show="showPCMailsBool">
+        <div>
+            <form>
+                <div class="form-group">
+                    <label for="emailTitle">Input the title:</label>
+                    <input type="text" class="form-control" id="emailTitle" ng-model="emailTitle1">
+                </div>
+                <div class="form-group">
+                    <label for="emailCon">Input the content:</label>
+                    <textarea class="form-control" id="emailCon" rows="3" ng-model="emailContent" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-default" ng-click="mailAuthors()">
+                    Send to Author
+                </button>
+            </form>
+        </div>
+        <hr />
+
+        <div>
+            <form>
+                <button type="submit" class="btn btn-default" ng-click="mailReviewers()">
+                    Send to Reviewer
+                </button>
+            </form>
+        </div>
+    </div>
+
+</div>
+</body>
+
+
+</html>
